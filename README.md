@@ -10,6 +10,18 @@ https://blog.csdn.net/u013797594/article/details/118865974
 
 python3 +windows
 
+## 安装
+
+pip3 install -r require.txt
+
+### 打包成exe:
+
+#这种方式打包出来运行速度比较快，-F打包的运行起来可能很慢
+
+pyinstaller -c lfi_gui.py --noconsole   
+
+打包后把config、tmp、xuyaode  这三个文件夹放到生成的目录里面。
+
 ## 介绍
 
 运行lfi_gui.py，是一个图像工具
@@ -53,3 +65,4 @@ static_dic目录中的文件是静态字典，可以自己去添加，一般没�
 
 
 最后所有的字典池合在一起就是结果。
+
