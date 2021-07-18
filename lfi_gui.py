@@ -1,10 +1,17 @@
-from PyQt5.Qt import QTextEdit,QPushButton,QWidget,QApplication,QThread,pyqtSignal,QComboBox,QLabel
+from PyQt5.Qt import QTextEdit,QPushButton,QWidget,QApplication,QThread,pyqtSignal,QTextCursor,QComboBox,QLabel,QMovie
 import sys
+from functools import partial
+import importlib
 import sip
 import os
+import re
+from urllib import parse
 import threading
 import time
+import subprocess
 from create_dic import create_dic
+import math
+import random
 
 class Worker(QThread):
     sinOut = pyqtSignal(str)
