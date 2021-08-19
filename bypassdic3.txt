@@ -1,0 +1,10 @@
+xxx%00
+xxx::$DATA
+xxx./
+xxx.
+xxx/.
+xxx"
+xxx<
+xxx>
+xxx+
+xxx%20

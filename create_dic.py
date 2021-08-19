@@ -21,7 +21,7 @@ class create_dic():
         with open(self.config_path+'bypassdic3.txt','r',encoding='utf-8') as f:
             self.bypassdic3=f.readlines()
 
-    def generate_lfi_dic(self,level,static_dic,keys):
+    def generate_lfi_dic(self,level,static_dic,keys,run_set):
         #清空结果，方便重复调用
         self.gen_dic.clear()
 
@@ -39,15 +39,15 @@ class create_dic():
             # --------------step1--------------------------------
             # 将集合1 gen_dic1的结果循环bypassdic1.txt---self.bypassdic1，添加上bypassdic1的内容，生成结果集合2
             gen_dic2 = set()
-            gen_dic2 = self.cycle_bypass(gen_dic1, self.bypassdic1)
+            gen_dic2 = self.cycle_bypass(gen_dic1, self.bypassdic1,run_set)
 
             # 将集合2 gen_dic2的结果循环bypassdic2.txt---self.bypassdic2，添加上bypassdic2的内容，生成结果集合3
             gen_dic3 = set()
-            gen_dic3 = self.cycle_bypass(gen_dic2, self.bypassdic2)
+            gen_dic3 = self.cycle_bypass(gen_dic2, self.bypassdic2,run_set)
 
             # 将集合3 gen_dic3的结果循环bypassdic3.txt----self.bypassdic3,添加上bypassdic3的内容，生成结果集合4
             gen_dic4 = set()
-            gen_dic4 = self.cycle_bypass(gen_dic3, self.bypassdic3)
+            gen_dic4 = self.cycle_bypass(gen_dic3, self.bypassdic3,run_set)
             self.gen_dic = self.gen_dic | gen_dic4
 
 
@@ -58,6 +58,7 @@ class create_dic():
             if re.match(r'[a-z]:|[A-Z]:', key):
                 gen_dic0.add(key.strip())
             else:
+
                 match=re.match(r'/|\\',key)
                 if match:
                     key=key.lstrip(match.group())
@@ -67,7 +68,7 @@ class create_dic():
 
             #将集合0 加上static_dic/default.txt----self.bypassdic0中的内容，生成集合1
             gen_dic1=set()
-            gen_dic1=self.cycle_bypass(gen_dic0,self.bypassdic0)
+            gen_dic1=self.cycle_bypass(gen_dic0,self.bypassdic0,run_set)
             #将gen_dic1加上static_dic/选择的字典中的内容
             with open(self.static_path+static_dic,'r',encoding='utf-8') as f:
                 for i in f:
@@ -76,26 +77,28 @@ class create_dic():
             #--------------step1--------------------------------
             #将集合1 gen_dic1的结果循环bypassdic1.txt---self.bypassdic1，添加上bypassdic1的内容，生成结果集合2
             gen_dic2=set()
-            gen_dic2=self.cycle_bypass(gen_dic1,self.bypassdic1)
+            gen_dic2=self.cycle_bypass(gen_dic1,self.bypassdic1,run_set)
 
             #将集合2 gen_dic2的结果循环bypassdic2.txt---self.bypassdic2，添加上bypassdic2的内容，生成结果集合3
             gen_dic3 = set()
-            gen_dic3 = self.cycle_bypass(gen_dic2, self.bypassdic2)
+            gen_dic3 = self.cycle_bypass(gen_dic2, self.bypassdic2,run_set)
 
             #将集合3 gen_dic3的结果循环bypassdic3.txt----self.bypassdic3,添加上bypassdic3的内容，生成结果集合4
             gen_dic4 = set()
-            gen_dic4 = self.cycle_bypass(gen_dic3, self.bypassdic3)
+            gen_dic4 = self.cycle_bypass(gen_dic3, self.bypassdic3,run_set)
             self.gen_dic=self.gen_dic|gen_dic4
 
         return self.gen_dic
 
 
-    def cycle_bypass(self,dic1,static_set):
+    def cycle_bypass(self,dic1,static_set,run_set):
         dic_tmp=set()
 
         for line in static_set:
             line=line.strip()
             if re.match(r'!--', line):
+                continue
+            if not self.is_run(line,run_set):
                 continue
 
             for value in dic1:
@@ -103,7 +106,7 @@ class create_dic():
                 if not value:
                     continue
 
-                if re.search(r'###', line):  # 只有绝对路径添加进来
+                if re.search(r'###', line) :  # 只有绝对路径添加进来
                     if re.match(r'[a-z]:|[A-Z]:|/\w|\\\w', value):
                         dic_tmp.add(line.replace('###', value)+'\n')
 
@@ -161,8 +164,28 @@ class create_dic():
 
         return string
 
+    def is_run(self,line,run_set):
+        #传入的line是bypassdic1/2/3中读取的内容（其中1个），run_set是需要启用的集合
+        fun=''
+        if re.match(r'xxx',line):
+            fun='后缀绕过'
+        else:
+            try:
+                fun=re.match(r'(php|compress|data|http|file)',line).group(1)
+            except:
+                fun=line.strip()
+
+        if fun in run_set:
+            return True
+        else:
+            return False
+
+
     def create_base(self,key,level=5):
         dic=set()
+        if level==0:
+            dic.add(key)
+            return dic
         for n in range(level):
             if n == 0:
                 key1 = '../' * n + '/' + key
@@ -175,21 +198,21 @@ class create_dic():
                 key3 = '/' + '../' * n + key
                 key4 = '\\' + '..\\' * n + key
 
-            dic.add(key1)
-            dic.add(key2)
-            dic.add(key3)
-            dic.add(key4)
+            dic.add(key1+'\n')
+            dic.add(key2+'\n')
+            dic.add(key3+'\n')
+            dic.add(key4+'\n')
 
         return dic
 
 if __name__=='__main__':
 
     #windows：
-    #linux：
-    a=create_dic().generate_lfi_dic(5,'default.txt',['index.php'])
-    # n=0
+    #linux：('http','file','compress','php','data','去后缀','双写','大小写','后缀绕过')
+    a=create_dic().generate_lfi_dic(5,'java.txt',[''],(''))
+    n=0
     # for i in a:
     #     n+=1
     #     print(n,i.strip())
-    # # # print(a)
-
+    print(a)
+    print(type(a))
