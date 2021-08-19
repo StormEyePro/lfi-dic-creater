@@ -4,6 +4,8 @@
 
 https://blog.csdn.net/u013797594/article/details/118865974
 
+参考文章中关于PHP文件包含漏洞的讲解，只写了http、file、compress、php://filter伪协议的绕过。其他的伪协议需要结合文件上传、post提交等方式，因此需要手工测试。
+
 ## 字典生成工具
 
 使用条件：
@@ -12,7 +14,7 @@ python3 +windows
 
 ## 安装
 
-pip3 install -r require.txt
+pip3 install -r requirement.txt
 
 ### 打包成exe:
 
@@ -26,7 +28,7 @@ pyinstaller -c lfi_gui.py --noconsole
 
 运行lfi_gui.py，是一个图像工具
 
-![image-20210718012134768](https://gitee.com/dd123456yybb/img/raw/master/image-20210718012134768.png)
+![image-20210819150925813](https://gitee.com/dd123456yybb/img/raw/master/image-20210819150925813.png)
 
 config目录中放了配置文件
 
@@ -38,31 +40,17 @@ static_dic目录中的文件是静态字典，可以自己去添加，一般没�
 
 ## 工具原理
 
-根据文件包含漏洞的漏洞原理，将它分为利用姿势和绕过姿势，组合了bypassdic1.txt、bypassdic2.txt、bypassdic3.txt   这3个文件，bypassdic1.txt放入的是文件包含的利用姿势，可自行添加。bypassdic2.txt和bypassdic3.txt放入的是绕过姿势，生成字典按照bypassdic1.txt-》bypassdic2.txt-》bypassdic3.txt的顺序运行。
-
-### 第一步：
-
-如输入flag.php，则会自动添加上相对路径../flag、../../flag等，目前最高添加到8级，可在config.txt中进行修改。如果是/etc/passwd这样的文件则不会添加相对路径。生成的内容加入到字典池。
-
-### 第二步：
-
-第一步及之前生成的所有字典按照bypassdic1.txt的内容进行替换，生成的内容加入到字典池。
-
-根据漏洞原理，对相对路径、绝对路径、data://、file://、http://、compress.zlib、compress.bzip2、php://filter进行爆破。
-
-### 第三步：
-
-第二步及之前生成的所有字典按照bypassdic2.txt的内容进行转换，生成的内容加入到字典池。
-
-进行大小写、双写和去掉后缀处理
-
-### 第四步：
-
-第三步及之前生成的所有字典按照bypassdic3.txt的内容进行转换，生成的内容加入到字典池。
-
-末尾添加%00  ::$data  ./ . /. “  < > + 空格进行绕过。
+![image-20210819151104547](https://gitee.com/dd123456yybb/img/raw/master/image-20210819151104547.png)
 
 
 
-最后所有的字典池合在一起就是结果。
+1.目录层将输入的文件名添加上../    ../../这样的上级目录，将结果存入集合1。
+
+2.目前可选http/file/compress/php伪协议，选择后按照config/bypassdic1.txt中对应规则替换存入集合2，并将结果与集合1并集
+
+3.可选去后缀、双写、大小写 绕过方式，选择后按照config/bypassdic2.txt中对应规则替换存入集合3，并将结果与集合2、集合1并集。
+
+4.可选去“后缀绕过”，选择后按照config/bypassdic3.txt中对应规则替换存入集合4，并将结果与集合3、集合2、集合1并集。
+
+
 
