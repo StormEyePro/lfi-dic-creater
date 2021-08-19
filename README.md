@@ -16,6 +16,10 @@ python3 +windows
 
 pip3 install -r requirement.txt
 
+### 直接运行
+
+python3 lfi_gui.py
+
 ### 打包成exe:
 
 #这种方式打包出来运行速度比较快，-F打包的运行起来可能很慢
