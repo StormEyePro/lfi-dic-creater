@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mybanner>
+    <banner name="elasticsearch" location="text">
+        <re_value>"status" : \w*</re_value>
+    </banner>
+
+    <banner name="thinkphp" location="headers" value="yes">
+        <re_value>ThinkPHP\w*.\w*</re_value>
+    </banner>
+
+    <banner name="Sangfor EDR终端检测响应平台" location="text">
+        <re_value>Loading...</re_value>
+        <re_value>location.href = "./ui/";</re_value>
+    </banner>
+
+    <banner name="天融信入侵防御系统" location="text">
+        <re_value>TOPIDP</re_value>
+    </banner>
+
+    <banner name="天融信数据防泄漏系统" location="text">
+        <re_value>天融信 - Tria</re_value>
+    </banner>
+
+    <banner name="深信服SSL VPN" location="text">
+        <re_value>window.location.href = "../cgi-bin/login.cgi</re_value>
+    </banner>
+
+    <banner name="天融信设备" location="text">
+        <re_value>meta http-equiv="refresh" content="0; URL=/cgi-bin/gui</re_value>
+    </banner>
+
+    <banner name="飞鱼星" location="text">
+        <re_value>menu.title1+menu.title2</re_value>
+    </banner>
+
+    <banner name="Spring框架" location="text">
+        <re_value>Whitelabel Error Page|status":404,"error":"Not Found","message":"No message available","path":"/</re_value>
+    </banner>
+
+    <banner name="thinkphp" location="text" send_url="/index.php/Home/Index/index">
+        <re_value>thinkphp \w*.\w*.\w*|www.thinkphp.cn|e.topthink.com|www.qiniu.com</re_value>
+    </banner>
+
+</mybanner>
